@@ -35,7 +35,7 @@
                 </v-list-item>
 
                 <v-list-item v-if="tab !== null">
-                    <v-list dense>
+                    <v-list dense class="space-y-3">
                         <v-btn
                             v-for="(menuItem, index) in tabs[tab].menuItems"
                             :key="index"
@@ -45,7 +45,7 @@
                                 ),
                             }"
                         >
-                            <router-link :to="{ name: menuItem.route }">
+                            <router-link :to="{ name: menuItem.route }" @click.stop="drawer = !drawer">
                                 <v-row align="center">
                                     <v-col cols="auto">
                                         <v-icon>{{ menuItem.icon }}</v-icon>
@@ -89,17 +89,27 @@ export default {
             drawer: false,
             tabs: [
                 {
-                    label: "Onglet 1",
+                    label: "ERP",
                     menuItems: [
                         {
                             label: "ACCUEIL",
                             icon: "mdi-home",
                             route: "Accueil",
                         },
+                        {
+                            label: "PRODUITS",
+                            icon: "mdi-home",
+                            route: "Produits",
+                        },
+                        {
+                            label: "FOURNISSEURS",
+                            icon: "mdi-home",
+                            route: "Fournisseurs",
+                        },
                     ],
                 },
                 {
-                    label: "Onglet 2",
+                    label: "CRM",
                     menuItems: [
                         {
                             label: "CONTACT",
@@ -135,6 +145,5 @@ export default {
 
 .menu-item-active {
     background-color: lightgreen;
-    color: black;
 }
 </style>
