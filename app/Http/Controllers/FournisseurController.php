@@ -11,7 +11,7 @@ class FournisseurController extends Controller
     public function index()
     {
         // Récupérez la liste de tous les fournisseurs
-        $fournisseurs = Fournisseur::all();
+        $fournisseurs = Fournisseur::orderBy('nom_entreprise')->get();
 
         return response()->json(['fournisseurs' => $fournisseurs]);
     }
@@ -28,7 +28,7 @@ class FournisseurController extends Controller
             'email' => 'nullable|string|email|max:255|unique:fournisseurs',
             'site_web' => 'nullable|string|max:255|unique:fournisseurs',
             'numero_tva' => 'nullable|string|max:255|unique:fournisseurs',
-            'notes' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:255',
         ]);
@@ -92,7 +92,7 @@ class FournisseurController extends Controller
                 'max:255',
                 Rule::unique('fournisseurs')->ignore($fournisseur->id),
             ],
-            'notes' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:255',
         ]);

@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Produit extends Model
+{
+    protected $table = 'produits';
+
+    protected $fillable = [
+        'reference',
+        'nom_produit',
+        'description',
+        'categorie',
+        'prix_achat',
+        'prix_vente',
+        'quantite_min_stock',
+        'quantite_stock',
+        'fournisseur_id',
+        'image_url',
+        'code_barres',
+        'taxes',
+        'remises',
+        'status',
+        'e_commerce',
+        'notes',
+    ];
+
+    public function fournisseur()
+    {
+        return $this->belongsTo(Fournisseur::class);
+    }
+}

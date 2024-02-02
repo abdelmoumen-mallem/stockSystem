@@ -15,6 +15,7 @@
             <v-data-table
                 :headers="headers"
                 :items="fournisseurs"
+                items-per-page-text="Item par page"
                 item-key="id"
                 :search="search"
                 class="elevation-1"
@@ -28,9 +29,9 @@
                     ></v-text-field>
                 </template>
                 <template v-slot:item.nom_entreprise="props">
-                    <v-btn text @click="editFournisseur(props.item.id)">{{
-                        props.item.nom_entreprise
-                    }}</v-btn>
+                    <v-btn text @click="editFournisseur(props.item.id)">
+                      {{ props.item.nom_entreprise  }}
+                   </v-btn>
                 </template>
                 <template v-slot:item.actions="props">
                     <td>
@@ -121,6 +122,11 @@
                 :message="confirmationMessage"
             >
             </confirmation-dialog>
+
+            <Loader :loading="isLoading" />
+
+            <Toast :show="showToast"/>
+
         </v-container>
     </div>
 </template>
@@ -129,6 +135,8 @@
 import { ref, onMounted } from "vue";
 import UseApi from "../composables/UseApi";
 import ConfirmationDialog from "../components/ConfirmationDialog.vue";
+import Loader from "../components/Loader.vue";
+import Toast from "../components/Toast.vue";
 
 // Gestion crud
 const { $get, $post, $put, $delete } = UseApi();
@@ -156,6 +164,8 @@ const editedFournisseur = ref({
     numero_tva: "",
     notes: "",
 });
+const isLoading = ref(false);
+const showToast = ref(false);
 
 // Variables pour la suppression
 const showDeleteConfirm = ref(false);
@@ -181,6 +191,8 @@ const editFournisseur = (id) => {
 
 const saveFournisseur = async () => {
     try {
+        isLoading.value = true;
+
         if (editingFournisseur.value) {
             // Effectuer une mise à jour
             await $put(
@@ -197,6 +209,11 @@ const saveFournisseur = async () => {
         // Remet les info a zero
         cancel();
 
+        showToast.value = true
+        setTimeout(() => {
+          showToast.value = false;
+        }, 3000);
+
         errorMessages.value = "";
     }  catch (error) {
     // Gérer l'erreur ici
@@ -205,12 +222,8 @@ const saveFournisseur = async () => {
     } else {
       errorMessages.value = "Une erreur s'est produite lors de la sauvegarde du fournisseur.";
     }
-    // Faire défiler vers l'élément "advertissement" (s'il est actuellement rendu)
-    const advertissementElement = document.getElementById("advertissement");
-    if (advertissementElement) {
-      advertissementElement.focus();
-    }
-    
+  }finally {
+    isLoading.value = false; 
   }
 };
 
@@ -243,6 +256,9 @@ const confirmDelete = (id) => {
 
 // Méthode pour effectuer la suppression après confirmation
 const deleteFournisseur = async (id) => {
+  try {
+    isLoading.value = true;
+
     await $delete(`fournisseurs/${id}`);
 
     // Actualiser la liste des fournisseurs
@@ -251,6 +267,11 @@ const deleteFournisseur = async (id) => {
     // Réinitialiser les valeurs
     deleteItemId.value = null;
     showDeleteConfirm.value = false;
+  }catch (error) {
+    errorMessages.value = "Une erreur s'est produite lors de la suppression du fournisseur.";
+  }finally {
+    isLoading.value = false; 
+  }
 };
 
 const resetDialog = () => {
@@ -260,4 +281,5 @@ const resetDialog = () => {
 onMounted(() => {
     fetchData();
 });
+
 </script>
