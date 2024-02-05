@@ -16,6 +16,7 @@
                 :headers="headers"
                 :items="fournisseurs"
                 items-per-page-text="Item par page"
+                no-data-text="Aucune donnée disponible"
                 item-key="id"
                 :search="search"
                 class="elevation-1"

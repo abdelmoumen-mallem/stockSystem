@@ -23,6 +23,7 @@
                 :headers="headers"
                 :items="produits"
                 items-per-page-text="Item par page"
+                no-data-text="Aucune donnée disponible"
                 item-key="id"
                 :search="search"
                 class="elevation-1"
@@ -99,11 +100,6 @@
                                 label="Qte stock min"
                             ></v-text-field>
                             <v-text-field
-                                v-model="editedProduit.quantite_stock"
-                                type="number"
-                                label="Qte total"
-                            ></v-text-field>
-                            <v-text-field
                                 v-model="editedProduit.code_barres"
                                 label="Code barre"
                             ></v-text-field>
@@ -117,15 +113,59 @@
                                 type="number"
                                 label="Remise"
                             ></v-text-field>
-                            <v-switch v-if="editingProduit" v-model="switchProduitStatut" color="blue" label-color="blue"></v-switch>
-                            <v-switch v-if="editingProduit" v-model="switchProduitEcommerce" color="blue" label-color="blue"></v-switch>
+                            <div v-if="editingProduit">
+                            Utilisation produit<v-switch  v-model="switchProduitStatut" color="blue" label-color="blue"></v-switch>
+                            <hr>
+                            Activation E-commerce<v-switch  v-model="switchProduitEcommerce" color="blue" label-color="blue"></v-switch>
+                            </div>
                             <v-text-field
                                 v-model="editedProduit.notes"
                                 label="Note"
                             ></v-text-field>
+
+                            <div v-if="!editingProduit">
+                               
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Photo produit n°1</span>
+                                    <input type="file" @change="handleFileChange(0)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 1"></i>
+                                </label>
+                                <div class="thumbnail-container">
+                                    <img :src="thumbnails[0]" v-if="thumbnails[0]" alt="Thumbnail 1" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[0]" @click="deleteThumbnail(0)" color="red" icon >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
+                                <br>
+                              
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Photo produit n°2</span>                                    <input type="file" @change="handleFileChange(1)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 2"></i>
+                                </label>
+                                <div class="thumbnail-container">
+                                    <img :src="thumbnails[1]" v-if="thumbnails[1]" alt="Thumbnail 2" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[1]" @click="deleteThumbnail(1)" color="red" icon >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
+                                <br>
+
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Photo produit n°3</span>                                    <input type="file" @change="handleFileChange(2)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 3"></i>
+                                </label>      
+                                <div class="thumbnail-container">
+                                    <img :src="thumbnails[2]" v-if="thumbnails[2]" alt="Thumbnail 3" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[2]" @click="deleteThumbnail(2)" color="red" icon >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
+                                                    
+                            </div>
+
                         </v-form>
                     </v-card-text>
-                    <v-card-actions class="custom-card-actions">
+                    <v-card-actions class="acustom-card-actions">
                         <v-btn @click="saveProduit" color="primary">{{
                             editingProduit ? "Modifier" : "Ajouter"
                         }}</v-btn>
@@ -194,9 +234,13 @@ const editedProduit = ref({
     e_commerce: "",
     notes: "",
     fournisseur_id: "",
+ 
 });
 const isLoading = ref(false);
 const showToast = ref(false);
+
+const thumbnails = ref([null, null, null]);
+
 
 // Variables pour la suppression
 const showDeleteConfirm = ref(false);
@@ -214,6 +258,30 @@ fournisseurs.value = response.fournisseurs;
 const fetchDataProduit = async () => {
 const response = await $get(`produits/${editedProduit.fournisseur_id}`);
 produits.value = response.produits;
+};
+
+const handleFileChange = (index) => {
+      const inputElement = document.querySelectorAll('input[type="file"]')[index];
+      if (inputElement && inputElement.files && inputElement.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          thumbnails.value[index] = e.target.result;
+        };
+        reader.readAsDataURL(inputElement.files[0]);
+      }else {
+        thumbnails.value[index] = null;
+      }
+};
+
+const deleteThumbnail = (index) => {
+      // Réinitialise la miniature lorsque l'utilisateur clique sur le bouton "Supprimer"
+      thumbnails.value[index] = null;
+
+      // Réinitialise le champ de fichier correspondant
+      const inputElement = document.querySelectorAll('input[type="file"]')[index];
+      if (inputElement) {
+        inputElement.value = '';
+      }
 };
 
 // Edition des fournisseurs
@@ -238,22 +306,63 @@ const saveProduit = async () => {
             editedProduit.value.status = switchProduitStatut.value == true ? 1 : 0
             editedProduit.value.e_commerce = switchProduitEcommerce.value == true ? 1 : 0
 
-            // Effectuer une mise à jour
+            // Effectue une mise à jour
             await $put(
                 `produits/${editingProduit.value}`,
                 editedProduit.value
             );
         } else {
-            // Effectuer une création
+            // Effectue une création
             editedProduit.value.fournisseur_id = fournisseurId.value.id
-           
-            await $post("produits", editedProduit.value);
+
+            // Crée un objet FormData pour envoyer les fichiers et les données
+            const formData = new FormData();
+
+            // Ajoute les propriétés de l'objet editedProduit au FormData
+            for (const key in editedProduit.value) {
+                formData.append(key, editedProduit.value[key]);
+            }
+
+            // Ajoute les fichiers d'image et leurs noms au FormData
+            const imageFiles = [
+                document.querySelectorAll('input[type="file"]')[0].files[0],
+                document.querySelectorAll('input[type="file"]')[1].files[0],
+                document.querySelectorAll('input[type="file"]')[2].files[0],
+            ];
+
+            const currentDate = new Date();
+            const year = currentDate.getFullYear().toString().slice(-2);
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); 
+            const day = currentDate.getDate().toString().padStart(2, '0'); 
+            const hour = currentDate.getHours().toString().padStart(2, '0'); 
+            const minute = currentDate.getMinutes().toString().padStart(2, '0'); 
+            const second = currentDate.getSeconds().toString().padStart(2, '0');
+
+            for (let i = 0; i < imageFiles.length; i++) {
+                if (imageFiles[i]) {
+                    const uniqueFileName = `${year}${month}${day}${hour}${minute}${second}${i + 1}.jpg`;
+
+                    formData.append(`image_url_${i + 1}_image`, thumbnails.value[i]);
+                    formData.append(`image_url_${i + 1}`, uniqueFileName);
+                }
+            }
+
+            // Effectue une création en envoyant le FormData
+            await $post("produits", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
         }
 
-        // Actualiser la liste des fournisseurs
+        // Actualise la liste des fournisseurs
         fetchDataProduit();
         // Remet les info a zero
         cancel();
+
+        for (let i = 0; i < 3; i++) {
+            deleteThumbnail(i)
+        }
 
         showToast.value = true
         setTimeout(() => {
@@ -262,7 +371,7 @@ const saveProduit = async () => {
 
         errorMessages.value = "";
     }  catch (error) {
-    // Gérer l'erreur ici
+    // Gére l'erreur ici
     if (error.response && error.response.data && error.response.data.message) {
       errorMessages.value = error.response.data.message;
     } else {
@@ -289,6 +398,7 @@ const cancel = () => {
         e_commerce: "",
         notes: "",
         fournisseur_id: "",
+      
     };
     editingProduit.value = null;
     fetchDataProduit();
@@ -313,10 +423,10 @@ const deleteProduit = async (id) => {
 
     await $delete(`produits/${id}`);
 
-    // Actualiser la liste des fournisseurs
+    // Actualise la liste des fournisseurs
     fetchDataProduit();
 
-    // Réinitialiser les valeurs
+    // Réinitialise les valeurs
     deleteItemId.value = null;
     showDeleteConfirm.value = false;
   }catch (error) {
@@ -347,9 +457,29 @@ const resetDialog = () => {
 <style>
 .custom-card-actions {
   position: fixed;
-  bottom: -10px;
+  bottom: -20px;
   width: 100%;
   z-index: 10;
+}
+
+.thumbnail-container {
+  display: flex;
+  align-items: center;
+}
+
+.file-upload-label {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.file-upload-icon {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.file-upload-icon i {
+  font-size: 24px;
+  color: #007bff; 
 }
 </style>
   
