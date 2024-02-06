@@ -106,6 +106,11 @@ export default {
                             icon: "mdi-home",
                             route: "Fournisseurs",
                         },
+                        {
+                            label: "ENTREES",
+                            icon: "mdi-home",
+                            route: "Entrees",
+                        },
                     ],
                 },
                 {
