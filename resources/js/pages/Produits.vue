@@ -3,6 +3,8 @@
       v-model="selectedFournisseur"
       :items="fournisseurs.map(fournisseur => fournisseur.nom_entreprise)"
       :item-value="fournisseurs.map(fournisseur => fournisseur.id)"
+      no-data-text="Aucune donnée disponible"
+
       label="Sélectionnez un fournisseur"
     ></v-select>
 
@@ -44,7 +46,7 @@
                 <template v-slot:item.actions="props">
                     <td>
                         <v-btn
-                            icon
+                            
                             @click="confirmDelete(props.item.id)"
                             color="red"
                         >
@@ -131,8 +133,8 @@
                                     <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 1"></i>
                                 </label>
                                 <div class="thumbnail-container">
-                                    <img :src="thumbnails[0]" v-if="thumbnails[0]" alt="Thumbnail 1" width="100" height="100" />
-                                    <v-btn v-if="thumbnails[0]" @click="deleteThumbnail(0)" color="red" icon >
+                                    <img :src="thumbnails[0]" class="mr-2" v-if="thumbnails[0]" alt="Thumbnail 1" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[0]" @click="deleteThumbnail(0)" color="red" >
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                 </div>
@@ -143,8 +145,8 @@
                                     <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 2"></i>
                                 </label>
                                 <div class="thumbnail-container">
-                                    <img :src="thumbnails[1]" v-if="thumbnails[1]" alt="Thumbnail 2" width="100" height="100" />
-                                    <v-btn v-if="thumbnails[1]" @click="deleteThumbnail(1)" color="red" icon >
+                                    <img :src="thumbnails[1]" class="mr-2" v-if="thumbnails[1]" alt="Thumbnail 2" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[1]" @click="deleteThumbnail(1)" color="red" >
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                 </div>
@@ -155,12 +157,98 @@
                                     <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 3"></i>
                                 </label>      
                                 <div class="thumbnail-container">
-                                    <img :src="thumbnails[2]" v-if="thumbnails[2]" alt="Thumbnail 3" width="100" height="100" />
-                                    <v-btn v-if="thumbnails[2]" @click="deleteThumbnail(2)" color="red" icon >
+                                    <img :src="thumbnails[2]" class="mr-2" v-if="thumbnails[2]" alt="Thumbnail 3" width="100" height="100" />
+                                    <v-btn v-if="thumbnails[2]" @click="deleteThumbnail(2)" color="red" >
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                 </div>
                                                     
+                            </div>
+                            <div v-if="editingProduit">
+                                <!-- Modification de l'image produit n°1 -->
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Modifier Photo produit n°1</span>
+                                    <input type="file" @change="handleFileChange(0)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 1"></i>
+                                </label>
+                                <div class="flex items-center">
+                                    <div class="thumbnail-container">
+                                        <img :src="`./images/produits/${editedProduit.image_url_1}`" v-if="editedProduit.image_url_1" alt="Thumbnail 1" width="100" height="100" />
+                                    </div>
+                                    <div class="thumbnail-container">
+                                        <v-icon v-if="thumbnails[0] && editedProduit.image_url_1">mdi-sync</v-icon>
+                                    </div>
+                                    <div class="thumbnail-container mr-2">
+                                        <img :src="thumbnails[0]" v-if="thumbnails[0]" alt="Thumbnail 1" width="100" height="100" />
+                                    </div>
+
+                                    <v-btn v-if="thumbnails[0] && editedProduit.image_url_1" @click="deleteThumbnail(0)" color="yellow">
+                                        rétablir
+                                    </v-btn>
+                                    <v-btn v-if="thumbnails[0] && !editedProduit.image_url_1" @click="deleteThumbnail(0)" color="red" >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
+                                <br>
+
+                                <!-- Modification de l'image produit n°2 -->
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Modifier Photo produit n°2</span>
+                                    <input type="file" @change="handleFileChange(1)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 2"></i>
+                                </label>
+                                <label for="activationImage2" class="ml-2">
+                                    <input id="activationImage2" type="checkbox" :checked="editedProduit.activate_image_2 === 1" name="activationImage2" title="Activation/Désactivation de l'image 2 sur e-commerce">
+                                    E-commerce
+                                </label>    
+                                <div class="flex items-center">
+                                    <div class="thumbnail-container">
+                                        <img :src="`./images/produits/${editedProduit.image_url_2}`" v-if="editedProduit.image_url_2" alt="Thumbnail 2" width="100" height="100" />
+                                    </div>
+                                    <div class="thumbnail-container">
+                                        <v-icon v-if="thumbnails[1] && editedProduit.image_url_2">mdi-sync</v-icon>
+                                    </div>
+                                    <div class="thumbnail-container mr-2">
+                                        <img :src="thumbnails[1]" v-if="thumbnails[1]" alt="Thumbnail 2" width="100" height="100" />
+                                    </div>
+
+                                    <v-btn v-if="thumbnails[1] && editedProduit.image_url_2" @click="deleteThumbnail(1)" color="yellow">
+                                        rétablir
+                                    </v-btn>
+                                    <v-btn v-if="thumbnails[1] && !editedProduit.image_url_2" @click="deleteThumbnail(1)" color="red" >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
+                                <br>
+
+                                <!-- Modification de l'image produit n°3 -->
+                                <label class="file-upload-label cursor-pointer bg-blue-500 text-white p-1 rounded flex items-center">
+                                    <span class="mr-2">Modifier Photo produit n°3</span>
+                                    <input type="file" @change="handleFileChange(2)" accept="image/*" class="hidden" />
+                                    <i class="mdi mdi-file-upload file-upload-icon" title="Image produit 3"></i>
+                                </label>
+                                <label for="activationImage3" class="ml-2">
+                                    <input id="activationImage3" type="checkbox" :checked="editedProduit.activate_image_3 === 1" name="activationImage3" title="Activation/Désactivation de l'image 3 sur e-commerce">
+                                    E-commerce
+                                </label>                                
+                                <div class="flex items-center">
+                                    <div class="thumbnail-container">
+                                        <img :src="`./images/produits/${editedProduit.image_url_3}`" v-if="editedProduit.image_url_3" alt="Thumbnail 3" width="100" height="100" />
+                                    </div>
+                                    <div class="thumbnail-container">
+                                        <v-icon v-if="thumbnails[2] && editedProduit.image_url_3">mdi-sync</v-icon>
+                                    </div>
+                                    <div class="thumbnail-container mr-2">
+                                        <img :src="thumbnails[2]" v-if="thumbnails[2]" alt="Thumbnail 3" width="100" height="100" />
+                                    </div>
+
+                                    <v-btn v-if="thumbnails[2] && editedProduit.image_url_3" @click="deleteThumbnail(2)" color="yellow">
+                                        rétablir
+                                    </v-btn>
+                                    <v-btn v-if="thumbnails[2] && !editedProduit.image_url_3" @click="deleteThumbnail(2)" color="red" >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
+                                </div>
                             </div>
 
                         </v-form>
@@ -234,7 +322,8 @@ const editedProduit = ref({
     e_commerce: "",
     notes: "",
     fournisseur_id: "",
- 
+    activate_image_2: "",
+    activate_image_3: "",
 });
 const isLoading = ref(false);
 const showToast = ref(false);
@@ -298,18 +387,69 @@ const editProduit = (id) => {
 const saveProduit = async () => {
     try {
         isLoading.value = true;
-
         
+        editedProduit.value.prix_achat = editedProduit.value.prix_achat || 0;
+        editedProduit.value.prix_vente = editedProduit.value.prix_vente || 0;
+        editedProduit.value.quantite_min_stock = editedProduit.value.quantite_min_stock || 0;
+        editedProduit.value.taxes = editedProduit.value.taxes || 0;
+        editedProduit.value.remises = editedProduit.value.remises || 0;
+        editedProduit.value.reference = editedProduit.value.reference || "";
+        editedProduit.value.description = editedProduit.value.description || "";
+        editedProduit.value.code_barres = editedProduit.value.code_barres || "";
+        editedProduit.value.notes = editedProduit.value.notes || "";
 
         if (editingProduit.value) {
 
             editedProduit.value.status = switchProduitStatut.value == true ? 1 : 0
             editedProduit.value.e_commerce = switchProduitEcommerce.value == true ? 1 : 0
 
+            const activateImg2 = document.querySelector("#activationImage2").checked;
+            const activateImg3 = document.querySelector("#activationImage3").checked;
+
+            editedProduit.value.activate_image_2 = activateImg2 == true ? 1 : 0
+            editedProduit.value.activate_image_3 = activateImg3 == true ? 1 : 0
+
+            // Crée un objet FormData pour envoyer les fichiers et les données
+            const formData = new FormData();
+
+            // Ajoute les propriétés de l'objet editedProduit au FormData
+            for (const key in editedProduit.value) {
+                formData.append(key, editedProduit.value[key]);
+            }
+
+            // Ajoute les fichiers d'image et leurs noms au FormData
+            const imageFiles = [
+                document.querySelectorAll('input[type="file"]')[0].files[0],
+                document.querySelectorAll('input[type="file"]')[1].files[0],
+                document.querySelectorAll('input[type="file"]')[2].files[0],
+            ];
+
+            const currentDate = new Date();
+            const year = currentDate.getFullYear().toString().slice(-2);
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); 
+            const day = currentDate.getDate().toString().padStart(2, '0'); 
+            const hour = currentDate.getHours().toString().padStart(2, '0'); 
+            const minute = currentDate.getMinutes().toString().padStart(2, '0'); 
+            const second = currentDate.getSeconds().toString().padStart(2, '0');
+
+            for (let i = 0; i < imageFiles.length; i++) {
+                if (imageFiles[i]) {
+                    const uniqueFileName = `${year}${month}${day}${hour}${minute}${second}${i + 1}.jpg`;
+
+                    formData.append(`image_url_${i + 1}_image`, thumbnails.value[i]);
+                    formData.append(`image_url_update_${i + 1}`, uniqueFileName);
+                }
+            }
+
             // Effectue une mise à jour
             await $put(
                 `produits/${editingProduit.value}`,
-                editedProduit.value
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
             );
         } else {
             // Effectue une création
@@ -346,7 +486,7 @@ const saveProduit = async () => {
                     formData.append(`image_url_${i + 1}`, uniqueFileName);
                 }
             }
-
+                          
             // Effectue une création en envoyant le FormData
             await $post("produits", formData, {
                 headers: {
@@ -398,11 +538,16 @@ const cancel = () => {
         e_commerce: "",
         notes: "",
         fournisseur_id: "",
-      
+        activate_image_2: "",
+        activate_image_3: "",
     };
     editingProduit.value = null;
     fetchDataProduit();
     showAddDialog.value = false;
+
+    for (let i = 0; i < 3; i++) {
+        deleteThumbnail(i)
+    }
 
 };
 

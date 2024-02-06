@@ -28,6 +28,8 @@ class Produit extends Model
         'status',
         'e_commerce',
         'notes',
+        'activate_image_2',
+        'activate_image_3',
     ];
 
     public function fournisseur()

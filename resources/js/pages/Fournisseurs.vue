@@ -37,7 +37,6 @@
                 <template v-slot:item.actions="props">
                     <td>
                         <v-btn
-                            icon
                             @click="confirmDelete(props.item.id)"
                             color="red"
                         >

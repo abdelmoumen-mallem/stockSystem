@@ -23,28 +23,23 @@ class ProduitsController extends Controller
         // Valide les données du formulaire
         $validatedData = $request->validate([
             'reference' => 'nullable|string|max:255|unique:produits',
-            'nom_produit' => 'required|string|max:255|unique:produits',
+            'nom_produit' => 'nullable|required|string|max:255|unique:produits',
             'description' => 'nullable|string|max:255',
-            'categorie' => 'nullable|string|max:255',
             'fournisseur_id' => 'required|exists:fournisseurs,id',
-            'image_url_1' => 'nullable|string|max:255|unique:produits',
-            'image_url_2' => 'nullable|string|max:255|unique:produits',
-            'image_url_3' => 'nullable|string|max:255|unique:produits',
+            'image_url_1' => 'string|max:255|unique:produits',
+            'image_url_2' => 'string|max:255|unique:produits',
+            'image_url_3' => 'string|max:255|unique:produits',
             'code_barres' => 'nullable|string|max:255|unique:produits',
             'notes' => 'nullable|string',
+            'prix_achat' => 'numeric',
+            'prix_vente' => 'numeric',
+            'quantite_min_stock' => 'integer',
+            'taxes' => 'numeric',
+            'remises' => 'numeric',
         ]);
 
         // Crée un nouveau produit avec les données validées
         $produit = Produit::create($validatedData);
-
-        /*$imageData = $request->input('image_url_1_image');
-        $fileName = $request->input('image_url_1');
-
-        list(, $imageData) = explode(',', $imageData);
-
-        $imageBinaryData = base64_decode($imageData);
-
-        file_put_contents(public_path('images/produits/' . $fileName), $imageBinaryData);*/
 
         for ($i = 1; $i <= 3; $i++) {
             $imageDataColumn = "image_url_{$i}_image";
@@ -79,6 +74,9 @@ class ProduitsController extends Controller
         // Récupére le produit à mettre à jour
         $produit = Produit::findOrFail($id);
 
+        $test = $request->input("activate_image_2");
+
+
         // Valide les données du formulaire
         $validatedData = $request->validate([
             'reference' => [
@@ -94,25 +92,6 @@ class ProduitsController extends Controller
                 Rule::unique('produits')->ignore($produit->id),
             ],
             'description' => 'nullable|string|max:255',
-            'categorie' => 'nullable|string|max:255',
-            'image_url_1' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('produits')->ignore($produit->id),
-            ],
-            'image_url_2' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('produits')->ignore($produit->id),
-            ],
-            'image_url_3' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('produits')->ignore($produit->id),
-            ],
             'code_barres' => [
                 'nullable',
                 'string',
@@ -122,12 +101,42 @@ class ProduitsController extends Controller
             'notes' => 'nullable|string',
             'status' => 'nullable|numeric',
             'e_commerce' => 'nullable|numeric',
+            'prix_achat' => 'numeric',
+            'prix_vente' => 'numeric',
+            'quantite_min_stock' => 'integer',
+            'taxes' => 'numeric',
+            'remises' => 'numeric',
+            'activate_image_2' => 'integer',
+            'activate_image_3' => 'integer',
         ]);
 
         // Mettre à jour les données du produit avec les données validées
         $produit->update($validatedData);
 
-        return response()->json(['message' => 'ok']);
+        for ($i = 1; $i <= 3; $i++) {
+            $imageDataColumn = "image_url_{$i}_image";
+            $fileNameColumn = "image_url_$i";
+            $fileNewNameColumn = "image_url_update_$i";
+
+            $imageData = $request->input($imageDataColumn);
+            $fileName = $request->input($fileNameColumn);
+            $fileNewName = $request->input($fileNewNameColumn);
+    
+            if ($imageData && $fileNewName) {
+                list(, $imageData) = explode(',', $imageData);
+                $imageBinaryData = base64_decode($imageData);
+                file_put_contents(public_path("images/produits/$fileNewName"), $imageBinaryData);
+
+                $filePath = public_path("images/produits/$fileName");
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                $produit->{"image_url_$i"} = $fileNewName;
+                $produit->save();
+            }
+        }
+
+        return response()->json(['message' => "OK"]);
     }
 
     public function destroy($id)
