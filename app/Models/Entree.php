@@ -29,4 +29,9 @@ class Entree extends Model
     {
         return $this->belongsTo(Produit::class);
     }
+
+    public function rack()
+    {
+        return $this->belongsTo(Rack::class);
+    }
 }

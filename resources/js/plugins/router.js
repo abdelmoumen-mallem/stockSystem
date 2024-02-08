@@ -38,9 +38,9 @@ const routes = [
     component: () => import('../pages/EntreesInfo.vue')
   },
   {
-    path: '/rack',
-    name: 'Rack',
-    component: () => import('../pages/Rack.vue')
+    path: '/rangement',
+    name: 'Rangement',
+    component: () => import('../pages/Rangement.vue')
   }
 
 ]

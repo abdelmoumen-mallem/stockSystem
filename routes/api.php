@@ -40,5 +40,10 @@ use Illuminate\Support\Facades\Route;
     Route::put('/entreesProduits/{id}', [EntreeProduitsController::class, 'update']);
     Route::delete('/entreesProduits/{id}', [EntreeProduitsController::class, 'destroy']);
 
+    Route::get('/rack/{id}', [EntreeProduitsController::class, 'index']);
+    Route::post('/rack', [EntreeProduitsController::class, 'store']);
+    Route::put('/rack/{id}', [EntreeProduitsController::class, 'update']);
+    Route::delete('/rack/{id}', [EntreeProduitsController::class, 'destroy']);
+
 
 //});

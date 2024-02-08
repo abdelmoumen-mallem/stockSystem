@@ -15,7 +15,7 @@ class EntreeProduitsController extends Controller
             'entree_info_id' => 'required|exists:entree_info,numero_facture',
             'quantite' => 'required|integer',
             'prix_unitaire' => 'required|numeric',
-            'emplacement_stockage' => 'nullable|string|max:255|unique:entrees',
+            'emplacement_stockage' => 'nullable|exists:racks,id',
             'palette' => 'nullable|string|max:255',
             'date_peremption' => 'nullable|date',
             'commentaire' => 'nullable|string',

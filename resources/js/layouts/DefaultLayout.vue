@@ -112,9 +112,9 @@ export default {
                             route: "Entrees",
                         },
                         {
-                            label: "RACK",
+                            label: "RANGEMENT",
                             icon: "mdi-home",
-                            route: "Rack",
+                            route: "Rangement",
                         },
                     ],
                 },
