@@ -16,6 +16,7 @@ class Rack extends Model
         'niveau',
         'statut',
         'categorie',
+        'alveole',
     ];
 
     public function entree()

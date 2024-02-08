@@ -4,6 +4,8 @@ use App\Http\Controllers\EntreeController;
 use App\Http\Controllers\EntreeProduitsController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\ProduitsController;
+use App\Http\Controllers\RackController;
+use App\Models\Rack;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,10 +42,10 @@ use Illuminate\Support\Facades\Route;
     Route::put('/entreesProduits/{id}', [EntreeProduitsController::class, 'update']);
     Route::delete('/entreesProduits/{id}', [EntreeProduitsController::class, 'destroy']);
 
-    Route::get('/rack/{id}', [EntreeProduitsController::class, 'index']);
-    Route::post('/rack', [EntreeProduitsController::class, 'store']);
-    Route::put('/rack/{id}', [EntreeProduitsController::class, 'update']);
-    Route::delete('/rack/{id}', [EntreeProduitsController::class, 'destroy']);
+    Route::get('/rack/{id}', [RackController::class, 'index']);
+    Route::post('/rack', [RackController::class, 'store']);
+    Route::put('/rack/{id}', [RackController::class, 'update']);
+    Route::delete('/rack/{id}', [RackController::class, 'destroy']);
 
 
 //});
