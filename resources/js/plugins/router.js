@@ -26,6 +26,21 @@ const routes = [
     path: '/entrees',
     name: 'Entrees',
     component: () => import('../pages/Entrees.vue')
+  },
+  {
+    path: '/entreesProduits/:id',
+    name: 'EntreesProduits',
+    component: () => import('../pages/EntreesProduits.vue')
+  },
+  {
+    path: '/entreesInfo',
+    name: 'EntreesInfo',
+    component: () => import('../pages/EntreesInfo.vue')
+  },
+  {
+    path: '/rack',
+    name: 'Rack',
+    component: () => import('../pages/Rack.vue')
   }
 
 ]

@@ -111,6 +111,11 @@ export default {
                             icon: "mdi-home",
                             route: "Entrees",
                         },
+                        {
+                            label: "RACK",
+                            icon: "mdi-home",
+                            route: "Rack",
+                        },
                     ],
                 },
                 {
